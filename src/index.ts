@@ -2,6 +2,8 @@ import { css } from 'goober';
 import { createElement, setStyles, px } from './utils/elements';
 import { getSelection } from './utils';
 
+let currentSelection: ReturnType<typeof getSelection>;
+
 const caretSize = 8;
 const color = '#FAE704';
 const backdrop = createElement('div', {
@@ -76,6 +78,8 @@ const onMouseUp = () => {
 		return;
 	}
 
+	currentSelection = selection;
+
 	const { top, left, width } = selection;
 
 	showMenu();
@@ -94,6 +98,8 @@ const onBackdropClick = () => {
 
 const onSave = (event: MouseEvent) => {
 	hideMenu();
+	console.log('saving', currentSelection);
+
 	event.stopPropagation();
 
 	if (window.getSelection().empty) {
@@ -103,12 +109,23 @@ const onSave = (event: MouseEvent) => {
 	}
 };
 
-window.addEventListener('mouseup', onMouseUp);
-backdrop.addEventListener('click', onBackdropClick);
-saveButton.addEventListener('click', onSave);
+const addListeners = () => {
+	window.addEventListener('mouseup', onMouseUp);
+	backdrop.addEventListener('click', onBackdropClick);
+	saveButton.addEventListener('click', onSave);
+};
 
-document.body.appendChild(
-	createElement('div', {
-		children: [backdrop, menu],
-	}),
-);
+const addElements = () => {
+	document.body.appendChild(
+		createElement('div', {
+			children: [backdrop, menu],
+		}),
+	);
+};
+
+const setup = () => {
+	addListeners();
+	addElements();
+};
+
+setup();
